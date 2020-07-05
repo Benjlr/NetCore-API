@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ZipProject.Model;
 
@@ -16,13 +19,21 @@ namespace ZipProject.Tests
         {
             builder.ConfigureServices(services =>
             {
+                var descriptor = services.SingleOrDefault(
+                        d => d.ServiceType ==
+                             typeof(DbContextOptions<zip_dbContext>));
+
+                if (descriptor != null)
+                {
+                    services.Remove(descriptor);
+                }
+
                 // Create a new service provider.
                 var serviceProvider = new ServiceCollection().AddEntityFrameworkInMemoryDatabase().BuildServiceProvider();
-
                 services.AddDbContext<zip_dbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryAppDb");
                     options.UseInternalServiceProvider(serviceProvider);
+                    options.UseInMemoryDatabase("memoryDB");
                 });
 
                 var sp = services.BuildServiceProvider();
@@ -43,11 +54,12 @@ namespace ZipProject.Tests
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, "An error occurred seeding the " + "database with test messages. Error: {ex.Message}");
+                        logger.LogError(ex, $"An error occurred seeding the database with test messages. Error: {ex.Message}");
                     }
                 }
             });
         }
+
 
     }
 }

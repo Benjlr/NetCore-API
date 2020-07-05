@@ -20,13 +20,15 @@ namespace ZipProject
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddDbContext<zip_dbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("ZipProjectContext"))); 
+
+
             services.AddControllers();
 
-            services.AddDbContext<zip_dbContext>();
 
             services.AddScoped<zip_dbContext>();
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -15,33 +15,29 @@ namespace ZipProject.Model
         {
         }
 
-        public virtual DbSet<Account> Account { get; set; }
-        public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<AccountModel> AccountModel { get; set; }
+        public virtual DbSet<UserModel> UserModel { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Server=azure-8a.database.windows.net;Database=zip_db;Trusted_Connection=False;User=benjamin;password=lQdP57xI*ttq");
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Account>(entity =>
+            modelBuilder.Entity<AccountModel>(entity =>
             {
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Account_User");
+                entity.HasKey(e => e.AccountOwner);
+
+                entity.Property(e => e.AccountOwner)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
             });
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<UserModel>(entity =>
             {
+                entity.HasKey(e => e.EmailAddress);
+
                 entity.Property(e => e.EmailAddress)
-                    .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
@@ -49,6 +45,12 @@ namespace ZipProject.Model
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.EmailAddressNavigation)
+                    .WithOne(p => p.UserModel)
+                    .HasForeignKey<UserModel>(d => d.EmailAddress)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserModel_AccountModel");
             });
 
             OnModelCreatingPartial(modelBuilder);

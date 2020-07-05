@@ -18,11 +18,11 @@ namespace ZipProject.Controllers
             _context = context;
         }
 
-        // POST: users/CreateUser
+        // POST: users/createuser
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<User>> CreateUser(User user)
+        [HttpPost("createuser")]
+        public async Task<ActionResult<UserModel>> CreateUser(UserModel user)
         {
             //Validation todo move to seperate class
             if (string.IsNullOrWhiteSpace(user.EmailAddress)) return BadRequest("Please enter your email address!");
@@ -30,43 +30,30 @@ namespace ZipProject.Controllers
             if (user.Expenses < 0) return BadRequest("Expenses must be larger than or equal to zero!");
             if (user.Salary < 0) return BadRequest("Salary must be larger than or equal to zero!");
 
-            if (_context.User.Any(x => x.EmailAddress.Equals(user.EmailAddress))) return BadRequest("Email Address Already Exists!");
+            if (_context.UserModel.Find(user.EmailAddress) != null) return BadRequest("Email Address Already Exists!");
 
 
-            _context.User.Add(user);
+            _context.UserModel.Add(user);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction("GetUser", new { EmailAddress = user.EmailAddress }, user);
         }
 
 
         // GET: users/listusers
         [HttpGet("listusers")]
-        public async Task<ActionResult<IEnumerable<User>>> ListUsers()
+        public async Task<ActionResult<IEnumerable<UserModel>>> ListUsers()
         {
             
-            return await _context.User.ToListAsync();
+            return await _context.UserModel.ToListAsync();
         }
 
-        // GET: users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
-        {
-            var user = await _context.User.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound("No user with that primary key!");
-            }
-
-            return user;
-        }
 
         // GET: users/fred@email.com
-        [HttpGet("{EmailAddress}")]
-        public async Task<ActionResult<User>> GetUser(string email)
+        [HttpGet("getuser/{EmailAddress}")]
+        public async Task<ActionResult<UserModel>> GetUser(string EmailAddress)
         {
-            var user = await _context.User.FirstAsync(x => x.EmailAddress.Equals(email));
+            var user = await _context.UserModel.FindAsync(EmailAddress);
 
             if (user == null)
             {

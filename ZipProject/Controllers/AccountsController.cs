@@ -20,9 +20,9 @@ namespace ZipProject.Controllers
 
         // GET: accounts/ListAccounts
         [HttpGet("listaccounts")]
-        public async Task<ActionResult<IEnumerable<Account>>> ListAccounts()
+        public async Task<ActionResult<IEnumerable<AccountModel>>> ListAccounts()
         {
-            return await _context.Account.ToListAsync();
+            return await _context.AccountModel.ToListAsync();
         }
 
 
@@ -30,33 +30,30 @@ namespace ZipProject.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost("createaccount")]
-        public async Task<ActionResult<Account>> CreateAccount(User user)
+        public async Task<ActionResult<AccountModel>> CreateAccount(UserModel user)
         {
-            var myUser =  _context.User.FirstOrDefault(x=>x.EmailAddress.Equals(user.EmailAddress));
+            var myUser = await _context.UserModel.FindAsync(user.EmailAddress);
             if (myUser == null) return BadRequest("No user with that email address!");
+            if (myUser.EmailAddressNavigation != null) return BadRequest("User already has account!");
             if (myUser.Salary - myUser.Expenses < 1000) return BadRequest("Not enough cash, sorry!");
 
-            //Do we allow multiple accounts for a user? Assuming yes...
-            var newAccnt = new Account()
+            //Do we allow multiple accounts for a user? Assuming no, hence primary key for accounts table
+            // is email which is also a foreign key back to users table...
+            var account = new AccountModel
             {
                 Amount = 1000,
-                User = myUser,
-                UserId = myUser.Id,
-
+                AccountOwner = myUser.EmailAddress
             };
-
-
-            await _context.Account.AddAsync(newAccnt);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAccount", new { id = newAccnt.AccountId });
+            return CreatedAtAction("GetAccount", new { EmailAddress = account.AccountOwner}, account);
         }
 
-        // GET: accounts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
+        // GET: accounts/fred@email.com
+        [HttpGet("getaccount/{EmailAddress}")]
+        public async Task<ActionResult<AccountModel>> GetAccount(string EmailAddress)
         {
-            var aacnt = await _context.Account.FindAsync(id);
+            var aacnt =  await _context.AccountModel.FindAsync(EmailAddress);
 
             if (aacnt == null)
             {
@@ -64,6 +61,7 @@ namespace ZipProject.Controllers
             }
 
             return aacnt;
+
         }
     }
 }
