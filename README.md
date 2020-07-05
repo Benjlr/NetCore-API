@@ -26,3 +26,5 @@ returns bad request if the user does not exist in the user database, ensure the 
 GET https://user-accounts-api.azurewebsites.net/accounts/getaccount/myEmailAddress@email.com
 if successful returns the accoutn with the specified email address
 returns bad request if the account does not exist
+
+Hosted at: https://user-accounts-api.azurewebsites.net
