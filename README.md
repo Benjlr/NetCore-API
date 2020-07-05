@@ -28,3 +28,16 @@ if successful returns the accoutn with the specified email address
 returns bad request if the account does not exist
 
 Hosted at: https://user-accounts-api.azurewebsites.net
+
+Sample UserModel http Payload for JSON content body:
+{
+    "EmailAddress": "test@email.com",
+    "Name": "Test",
+    "Salary": 9000,
+    "Expenses": 6500
+}
+Sample AccountModel:
+{
+    "AccountOwner": "test@email.com",
+    "Amount": 1000,
+}
