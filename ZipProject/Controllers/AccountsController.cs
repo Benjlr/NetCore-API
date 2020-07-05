@@ -21,7 +21,7 @@ namespace ZipProject.Controllers
         [HttpGet("listaccounts")]
         public async Task<ActionResult<IEnumerable<AccountModel>>> ListAccounts()
         {
-            return await _context.AccountModel.ToListAsync();
+            return await _context.AccountModel.Include(x => x.AccountOwnerNavigation).ToListAsync();
         }
 
 
