@@ -20,6 +20,11 @@ namespace ZipProject.Model
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=azure-8a.database.windows.net;Database=zip_db;Trusted_Connection=false;User=benjamin;password=lQdP57xI*ttq");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -31,6 +36,12 @@ namespace ZipProject.Model
                 entity.Property(e => e.AccountOwner)
                     .HasMaxLength(100)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.AccountOwnerNavigation)
+                    .WithOne(p => p.AccountModel)
+                    .HasForeignKey<AccountModel>(d => d.AccountOwner)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_AccountModel_UserModel");
             });
 
             modelBuilder.Entity<UserModel>(entity =>
@@ -45,12 +56,6 @@ namespace ZipProject.Model
                     .IsRequired()
                     .HasMaxLength(100)
                     .IsUnicode(false);
-
-                entity.HasOne(d => d.EmailAddressNavigation)
-                    .WithOne(p => p.UserModel)
-                    .HasForeignKey<UserModel>(d => d.EmailAddress)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserModel_AccountModel");
             });
 
             OnModelCreatingPartial(modelBuilder);

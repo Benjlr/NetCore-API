@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ZipProject.Model;
 
@@ -34,7 +33,7 @@ namespace ZipProject.Controllers
         {
             var myUser = await _context.UserModel.FindAsync(user.EmailAddress);
             if (myUser == null) return BadRequest("No user with that email address!");
-            if (myUser.EmailAddressNavigation != null) return BadRequest("User already has account!");
+            if (myUser.AccountModel != null) return BadRequest("User already has account!");
             if (myUser.Salary - myUser.Expenses < 1000) return BadRequest("Not enough cash, sorry!");
 
             //Do we allow multiple accounts for a user? Assuming no, hence primary key for accounts table
@@ -44,9 +43,10 @@ namespace ZipProject.Controllers
                 Amount = 1000,
                 AccountOwner = myUser.EmailAddress
             };
+            _context.Add(account);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAccount", new { EmailAddress = account.AccountOwner}, account);
+            return CreatedAtAction("GetAccount", new { EmailAddress = user.EmailAddress }, account);
         }
 
         // GET: accounts/fred@email.com
@@ -57,7 +57,7 @@ namespace ZipProject.Controllers
 
             if (aacnt == null)
             {
-                return NotFound("No account with that primary key!");
+                return NotFound("No account with that owner!");
             }
 
             return aacnt;

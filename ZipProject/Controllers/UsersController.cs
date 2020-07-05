@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using ZipProject.Model;
 
@@ -45,7 +45,7 @@ namespace ZipProject.Controllers
         public async Task<ActionResult<IEnumerable<UserModel>>> ListUsers()
         {
             
-            return await _context.UserModel.ToListAsync();
+            return await _context.UserModel.Include(x=>x.AccountModel).ToListAsync();
         }
 
 

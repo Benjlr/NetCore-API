@@ -8,6 +8,6 @@ namespace ZipProject.Model
         public string AccountOwner { get; set; }
         public int Amount { get; set; }
 
-        public virtual UserModel UserModel { get; set; }
+        public virtual UserModel AccountOwnerNavigation { get; set; }
     }
 }

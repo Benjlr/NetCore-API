@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using ZipProject.Model;
 
 namespace ZipProject
@@ -21,11 +22,13 @@ namespace ZipProject
         public void ConfigureServices(IServiceCollection services)
         {
 
+
             services.AddDbContext<zip_dbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ZipProjectContext"))); 
 
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
 
 
             services.AddScoped<zip_dbContext>();

@@ -10,6 +10,6 @@ namespace ZipProject.Model
         public int Salary { get; set; }
         public int Expenses { get; set; }
 
-        public virtual AccountModel EmailAddressNavigation { get; set; }
+        public virtual AccountModel AccountModel { get; set; }
     }
 }
