@@ -23,9 +23,9 @@ GET https://user-accounts-api.azurewebsites.net/accounts/getaccount/myEmailAddre
 POST https://user-accounts-api.azurewebsites.net/accounts/createaccount
 - If a user is posted in the request content, an account is created with the users email address.
 - Returns account if successful.
-- Returns bad request if the the salary-expenses of the user is less than 1000
-- Returns bad request if the user already has an account
-- Returns bad request if the user does not exist in the user database
+- Returns bad request if the the salary-expenses of the user is less than 1000.
+- Returns bad request if the user already has an account.
+- Returns bad request if the user does not exist in the user table.
 
 Hosted at: https://user-accounts-api.azurewebsites.net
 
